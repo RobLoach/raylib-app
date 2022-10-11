@@ -18,7 +18,7 @@ void Init(App* app) {
     // InitWindow() is automatically called prior to this function.
 }
 
-void Update(App* app) {
+void UpdateDrawFrame(App* app) {
     BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -38,7 +38,7 @@ App Main(int argc, char* argv[]) {
         .height = 450,
         .title = "raylib-app [core] example - basic window",
         .init = Init,
-        .update = Update,
+        .update = UpdateDrawFrame,
         .close = Close,
         .fps = 60,
     };
@@ -47,8 +47,23 @@ App Main(int argc, char* argv[]) {
 
 ## API
 
+Rather than having your own `int main()`, you will define your own `App Main(int argc char* argv[])` function.
+
 ``` c
-void CloseApp(App* app);
+void CloseApp(App* app);    // Tells the application that it should close.
+
+App Main(int argc, char* argv[]) {
+    return (App) {
+        .width = 800,
+        .height = 450,
+        .title = "raylib-app [core] example - basic window",
+        .init = Init,
+        .update = UpdateDrawFrame,
+        .close = Close,
+        .fps = 60,
+        .configFlags = FLAG_WINDOW_RESIZABLE,
+    };
+}
 ```
 
 ## Development
