@@ -144,7 +144,10 @@ int main(int argc, char* argv[]) {
     App app = Main(argc, argv);
 
     // Config Flags
-    if (app.configFlags != 0) {
+    if (app.configFlags < 0) {
+        return 0;
+    }
+    else if (app.configFlags != 0) {
         SetConfigFlags(app.configFlags);
     }
 
