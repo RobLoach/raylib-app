@@ -51,6 +51,7 @@ struct App {
     int configFlags;
     int fps;
     bool shouldClose;
+    int exitStatus;
 
     void* userData;
 };
@@ -180,8 +181,7 @@ int main(int argc, char* argv[]) {
     }
     CloseWindow();
 
-    // TODO: Allow reporting an exit error.
-    return 0;
+    return app.exitStatus;
 }
 #endif // RAYLIB_APP_NO_ENTRY
 
