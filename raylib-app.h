@@ -144,6 +144,11 @@ int main(int argc, char* argv[]) {
     // Get the user-defined App from their Main() function.
     App app = Main(argc, argv);
 
+    // Allow exiting early if desired.
+    if (app.exitStatus != 0) {
+        return app.exitStatus;
+    }
+
     // Config Flags
     if (app.configFlags != 0) {
         SetConfigFlags(app.configFlags);
