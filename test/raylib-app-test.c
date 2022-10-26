@@ -5,6 +5,7 @@
 #include "raylib-app.h"
 
 typedef struct AppData {
+    int frameCount;
     bool initCalled;
     bool updateCalled;
     bool closeCalled;
@@ -36,8 +37,10 @@ void UpdateDrawFrame(App* app) {
     EndDrawing();
     //----------------------------------------------------------------------------------
 
-    // Tell the test that it should stop running.
-    CloseApp(app);
+    // Close after 10 frames
+    if (++appData->frameCount >= 10) {
+        CloseApp(app);
+    }
 }
 
 void Close(App* app) {
@@ -50,6 +53,7 @@ void Close(App* app) {
     Assert(appData->initCalled);
     Assert(appData->updateCalled);
     Assert(appData->closeCalled);
+    AssertEqual(appData->frameCount, 10, "Expected frame counter is not 10, it is %i", appData->frameCount);
 
     // Clean up the application data.
     MemFree(appData);
