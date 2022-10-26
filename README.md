@@ -52,14 +52,17 @@ Rather than having your own `int main()`, you will define your own `App Main(int
 ``` c
 App Main(int argc, char* argv[]) {
     return (App) {
-        .width = 800,
-        .height = 450,
-        .title = "raylib-app [core] example - basic window",
-        .init = Init,
-        .update = UpdateDrawFrame,
-        .close = Close,
-        .fps = 60,
-        .configFlags = FLAG_WINDOW_RESIZABLE,
+        .width = 800,                          // The width of the window
+        .height = 450,                         // The height of the window
+        .title = "raylib-app",                 // The window title
+        .init = Init,                          // The init callback that is called when the application initializes
+        .update = UpdateDrawFrame,             // The update callback that is called when the application should render
+        .close = Close,                        // The close callback which is called when the application is closed
+        .fps = 60,                             // The target frames-per-second
+        .configFlags = FLAG_WINDOW_RESIZABLE,  // The flags that are passed to SetConfigFlags()
+        .shouldClose = false,                  // Indicate whether or not the application should be closed
+        .exitStatus = 0,                       // When the application closes, this is the exit status that is returned
+        .userData = NULL                       // Custom user data that is passed through all the callbacks
     };
 }
 ```
@@ -68,7 +71,7 @@ App Main(int argc, char* argv[]) {
 
 Through the update callback, you can call the following function to let the application know that it should stop calling the update callback.
 
-```
+``` c
 void CloseApp(App* app);    // Tells the application that it should close.
 ```
 
