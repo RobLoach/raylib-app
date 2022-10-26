@@ -1,6 +1,6 @@
 /**********************************************************************************************
 *
-*   raylib-app v0.0.1 - Application wrapper for raylib.
+*   raylib-app v0.0.2 - Application wrapper for raylib.
 *
 *       https://github.com/RobLoach/raylib-app
 *
@@ -40,23 +40,95 @@ extern "C" {
 
 typedef struct App App;
 
+/**
+ * Application data that is used to manage the window.
+ */
 struct App {
+    /**
+     * The initiatialization callback for the application.
+     *
+     * InitWindow() will be called prior to init() being called.
+     *
+     * @param app The App information for the currently running application.
+     */
     void (*init)(App* app);
+
+    /**
+     * The update callback to update and draw the application.
+     *
+     * @param app The App information for the currently running application.
+     */
     void (*update)(App* app);
+
+    /**
+     * The close callback used to deinitialize all application data.
+     *
+     * CloseWindow() is called after the callback is run.
+     *
+     * @param app The App information for the currently running application.
+     */
     void (*close)(App* app);
 
+    /**
+     * The desired width of the application window.
+     */
     int width;
+
+    /**
+     * The desired height of the application window.
+     */
     int height;
+
+    /**
+     * The title of the application window.
+     */
     const char* title;
-    int configFlags;
+
+    /**
+     * Configuration flags that are set prior to initializing the window.
+     *
+     * @see ConfigFlags
+     * @see SetConfigFlags()
+     */
+    unsigned int configFlags;
+
+    /**
+     * The target frames-per-second that will be used for the application.
+     *
+     * @see SetTargetFPS()
+     */
     int fps;
+
+    /**
+     * When set to TRUE, will stop running the update() callback and close the application.
+     *
+     * @see CloseApp()
+     */
     bool shouldClose;
+
+    /**
+     * The exit status to return after the application has been run.
+     *
+     * Set this to 1 if you'd like to report an error when exiting.
+     */
     int exitStatus;
 
+    /**
+     * Custom user data that is passed through the application callbacks.
+     *
+     * This is helpful if you have context that needs to be passed through all the callbacks.
+     *
+     * @example test/raylib-app-test.c
+     */
     void* userData;
 };
 
-void CloseApp(App* app);        // Tells the application that it should close.
+/**
+ * Tells the application that it should close.
+ *
+ * @param app The application that should be closed.
+ */
+void CloseApp(App* app);
 
 #if defined(__cplusplus)
 }
@@ -92,11 +164,11 @@ extern "C" {
 
 #if !defined(RAYLIB_APP_NO_ENTRY)
 /**
- * Define a Main() function as your entry point of your application.
+ * The main entry point defining the application behavior.
  *
+ * @see App
  * @param argc The length of the argument vector.
  * @param argv The array of arguments.
- * @see App
  * @example examples/core_basic_window.c
  *
  * @return The App description for your Application.
@@ -145,7 +217,7 @@ int main(int argc, char* argv[]) {
     App app = Main(argc, argv);
 
     // Allow exiting early if desired.
-    if (app.exitStatus != 0) {
+    if (app.shouldClose) {
         return app.exitStatus;
     }
 
@@ -156,6 +228,8 @@ int main(int argc, char* argv[]) {
 
     // Initialize
     InitWindow(app.width, app.height, app.title);
+
+    // Handle the FPS
     if (app.fps > 0) {
         SetTargetFPS(app.fps);
     }

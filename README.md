@@ -50,8 +50,6 @@ App Main(int argc, char* argv[]) {
 Rather than having your own `int main()`, you will define your own `App Main(int argc char* argv[])` function.
 
 ``` c
-void CloseApp(App* app);    // Tells the application that it should close.
-
 App Main(int argc, char* argv[]) {
     return (App) {
         .width = 800,
@@ -64,6 +62,14 @@ App Main(int argc, char* argv[]) {
         .configFlags = FLAG_WINDOW_RESIZABLE,
     };
 }
+```
+
+### Functions
+
+Through the update callback, you can call the following function to let the application know that it should stop calling the update callback.
+
+```
+void CloseApp(App* app);    // Tells the application that it should close.
 ```
 
 ## Development

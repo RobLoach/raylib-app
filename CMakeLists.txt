@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 project(raylib-app
     DESCRIPTION "raylib-app: Application wrapper for raylib."
     HOMEPAGE_URL "https://github.com/robloach/raylib-app"
-    VERSION 0.0.1
+    VERSION 0.0.2
     LANGUAGES C
 )
 
@@ -24,4 +24,14 @@ option(RAYLIB_APP_BUILD_EXAMPLES "Build Examples" ${RAYLIB_APP_IS_MAIN})
 # raylib-umka
 if (RAYLIB_APP_BUILD_EXAMPLES)
     add_subdirectory(examples)
+
+    # Testing
+    include(CTest)
+    enable_testing()
+    if (BUILD_TESTING)
+        # set(CTEST_CUSTOM_TESTS_IGNORE
+        #     pkg-config--static
+        # )
+        add_subdirectory(test)
+    endif()
 endif()
