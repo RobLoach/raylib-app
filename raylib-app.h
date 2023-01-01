@@ -258,6 +258,13 @@ int main(int argc, char* argv[]) {
     if (app.close != NULL) {
         app.close(&app);
     }
+
+    // Free up any user data memory.
+    if (app.userData != NULL) {
+        MemFree(app.userData);
+        app.userData = NULL;
+    }
+
     CloseWindow();
 
     return app.exitStatus;
