@@ -14,7 +14,11 @@ typedef struct AppData {
 void Init(App* app) {
     // Initialization
     //--------------------------------------------------------------------------------------
-    AppData* appData = (AppData*)app->userData;
+
+    // Create the user data.
+    AppData* appData = MemAlloc(sizeof(AppData));
+    app->userData = appData;
+
     appData->initCalled = true;
     //--------------------------------------------------------------------------------------
 }
@@ -68,9 +72,6 @@ App Main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    // Create the user data.
-    AppData* appData = MemAlloc(sizeof(AppData));
-
     // Create the application data.
     return (App) {
         .width = 640,
@@ -80,7 +81,6 @@ App Main(int argc, char* argv[]) {
         .update = UpdateDrawFrame,
         .close = Close,
         .fps = 60,
-        .userData = appData,
 
         // Assume an error, unless the callbacks were called.
         .exitStatus = 1

@@ -1,6 +1,6 @@
 /**********************************************************************************************
 *
-*   raylib-app v0.0.2 - Application wrapper for raylib.
+*   raylib-app v0.0.3 - Application wrapper for raylib.
 *
 *       https://github.com/RobLoach/raylib-app
 *
@@ -257,12 +257,6 @@ int main(int argc, char* argv[]) {
     // Close the App and Window
     if (app.close != NULL) {
         app.close(&app);
-    }
-
-    // Free up any user data memory.
-    if (app.userData != NULL) {
-        MemFree(app.userData);
-        app.userData = NULL;
     }
 
     CloseWindow();

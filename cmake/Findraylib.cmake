@@ -1,16 +1,17 @@
 # RAYLIB_VERSION
 # todo: Switch to FindPackageHandleStandardArgs
 if (NOT RAYLIB_VERSION)
-    set(RAYLIB_VERSION "4.2.0")
+    set(RAYLIB_VERSION 5.0)
 endif()
 
 include(FetchContent)
 FetchContent_Declare(
     raylib
-    GIT_REPOSITORY https://github.com/raysan5/raylib.git
-    GIT_TAG ${RAYLIB_VERSION}
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
 )
 FetchContent_GetProperties(raylib)
+
 if (NOT raylib_POPULATED)
     set(FETCHCONTENT_QUIET NO)
     FetchContent_Populate(raylib)
