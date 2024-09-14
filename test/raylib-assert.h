@@ -3,12 +3,12 @@
 *   raylib-assert - Assertion library for raylib.
 *   https://github.com/robloach/raylib-assert
 *
-*   Version: v2.0.0
+*   Version: v2.1.0
 *
 *   Copyright 2023 Rob Loach (@RobLoach)
 *
 *   DEPENDENCIES:
-*       raylib 4.5+ https://www.raylib.com
+*       raylib 5.0+ https://www.raylib.com
 *
 *   LICENSE: zlib/libpng
 *
@@ -201,6 +201,19 @@ extern "C" {
  */
 #define AssertVector2Same(...) RAYLIB_ASSERT_VA_SELECT(AssertVector2Same, __VA_ARGS__)
 
+/**
+ * Assert whether two Vector3s are the same.
+ *
+ * @param vector1 The first Vector3 to check.
+ * @param vector2 The second Vector3 to check.
+ * @param message (Optional) The message to provide on failed assertions.
+ * @param p1 (Optional) The first parameter in the message.
+ * @param p2 (Optional) The second parameter in the message.
+ * @param p3 (Optional) The third parameter in the message.
+ * @param p4 (Optional) The fourth parameter in the message.
+ */
+#define AssertVector3Same(...) RAYLIB_ASSERT_VA_SELECT(AssertVector3Same, __VA_ARGS__)
+
 // Assert()
 #ifdef RAYLIB_ASSERT_NDEBUG
 #define Assert_0()
@@ -381,6 +394,31 @@ extern "C" {
 #define AssertVector2Same_5(vector1, vector2, message, p1, p2) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
 #define AssertVector2Same_6(vector1, vector2, message, p1, p2, p3) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
 #define AssertVector2Same_7(vector1, vector2, message, p1, p2, p3, p4) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
+#endif
+
+// AssertVector3Same()
+#ifdef RAYLIB_ASSERT_NDEBUG
+#define AssertVector3Same_0()
+#define AssertVector3Same_1(vector)
+#define AssertVector3Same_2(vector1, vector2)
+#define AssertVector3Same_3(vector1, vector2, message)
+#define AssertVector3Same_4(vector1, vector2, message, p1)
+#define AssertVector3Same_5(vector1, vector2, message, p1, p2)
+#define AssertVector3Same_6(vector1, vector2, message, p1, p2, p3)
+#define AssertVector3Same_7(vector1, vector2, message, p1, p2, p3, p4)
+#else
+#define AssertVector3Same_0() AssertFail_1("Vectors not provided to AssertVector2Same()")
+#define AssertVector3Same_1(vector) AssertFail_1("Expected two vectors for AssertVector2Same()")
+#define AssertVector3Same_2(vector1, vector2) AssertVector3Same_5(vector1, vector2, "AssertVector2Same(%s, %s) - vectors do not match", #vector1, #vector2)
+#define AssertVector3Same_3(vector1, vector2, message) do { \
+    if (vector1.x != vector2.x || vector1.y != vector2.y || vector1.z != vector2.z) { \
+        AssertFail_1(message); \
+    }\
+} while (0)
+#define AssertVector3Same_4(vector1, vector2, message, p1) AssertVector3Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
+#define AssertVector3Same_5(vector1, vector2, message, p1, p2) AssertVector3Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
+#define AssertVector3Same_6(vector1, vector2, message, p1, p2, p3) AssertVector3Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
+#define AssertVector3Same_7(vector1, vector2, message, p1, p2, p3, p4) AssertVector3Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
 #endif
 
 #ifdef __cplusplus

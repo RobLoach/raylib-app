@@ -5,7 +5,7 @@
 *       https://github.com/RobLoach/raylib-app
 *
 *   DEPENDENCIES:
-*       - raylib 4.x https://www.raylib.com
+*       - raylib 5.x https://www.raylib.com
 *
 *   LICENSE: zlib/libpng
 *
