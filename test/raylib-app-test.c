@@ -11,22 +11,35 @@ typedef struct AppData {
     bool closeCalled;
 } AppData;
 
-void Init(App* app) {
+bool Init(void** userData, int argc, char** argv) {
     // Initialization
     //--------------------------------------------------------------------------------------
+    (void)argc;
+    (void)argv;
 
     // Create the user data.
     AppData* appData = MemAlloc(sizeof(AppData));
-    app->userData = appData;
+    if (appData == NULL) {
+        return false;
+    }
+
+    *userData = (void*)appData;
 
     appData->initCalled = true;
+
+    return true;
     //--------------------------------------------------------------------------------------
 }
 
-void UpdateDrawFrame(App* app) {
+bool UpdateDrawFrame(void* userData) {
     // Update
     //----------------------------------------------------------------------------------
-    AppData* appData = (AppData*)app->userData;
+    AppData* appData = (AppData*)userData;
+
+    if (appData == NULL) {
+        return false;
+    }
+
     appData->updateCalled = true;
     //----------------------------------------------------------------------------------
 
@@ -43,14 +56,16 @@ void UpdateDrawFrame(App* app) {
 
     // Close after 10 frames
     if (++appData->frameCount >= 10) {
-        CloseApp(app);
+        return false;
     }
+
+    return true;
 }
 
-void Close(App* app) {
+void Close(void* userData) {
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    AppData* appData = (AppData*)app->userData;
+    AppData* appData = (AppData*)userData;
     appData->closeCalled = true;
 
     // Run the asserts, assuming all callbacks were executed.
@@ -61,17 +76,10 @@ void Close(App* app) {
 
     // Clean up the application data.
     MemFree(appData);
-
-    // Since the callbacks were called, close the application without error.
-    app->exitStatus = 0;
     //--------------------------------------------------------------------------------------
 }
 
-App Main(int argc, char* argv[]) {
-    // Ignore unused arguments.
-    (void)argc;
-    (void)argv;
-
+App Main() {
     // Create the application data.
     return (App) {
         .width = 640,
@@ -81,8 +89,5 @@ App Main(int argc, char* argv[]) {
         .update = UpdateDrawFrame,
         .close = Close,
         .fps = 60,
-
-        // Assume an error, unless the callbacks were called.
-        .exitStatus = 1
     };
 }

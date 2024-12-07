@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 project(raylib-app
     DESCRIPTION "raylib-app: Application wrapper for raylib."
     HOMEPAGE_URL "https://github.com/robloach/raylib-app"
-    VERSION 0.1.0
+    VERSION 1.0.0
     LANGUAGES C
 )
 

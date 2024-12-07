@@ -3,19 +3,21 @@
 #define RAYLIB_APP_IMPLEMENTATION
 #include "raylib-app.h"
 
-void Init(App* app) {
+bool Init(void** userData, int argc, char** argv) {
     // Initialization
     //--------------------------------------------------------------------------------------
-
     // InitWindow() is automatically called before this function is called.
-
     //--------------------------------------------------------------------------------------
+
+    return true;
 }
 
-void UpdateDrawFrame(App* app) {
+bool UpdateDrawFrame(void* userData) {
     // Update
     //----------------------------------------------------------------------------------
-    // TODO: Update your variables here
+    if (IsKeyDown(KEY_Q)) {
+        return false;
+    }
     //----------------------------------------------------------------------------------
 
     // Draw
@@ -26,24 +28,21 @@ void UpdateDrawFrame(App* app) {
 
         DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
 
-        if (IsKeyDown(KEY_Q)) {
-            DrawCircle(300,200, 200, RED);
-        }
-
     EndDrawing();
     //----------------------------------------------------------------------------------
+
+    // Return false to end the update loop.
+    return true;
 }
 
-void Close(App* app) {
+void Close(void* userData) {
     // De-Initialization
     //--------------------------------------------------------------------------------------
-
     // CloseWindow() is automatically called after this function completes.
-
     //--------------------------------------------------------------------------------------
 }
 
-App Main(int argc, char* argv[]) {
+App Main() {
     return (App) {
         .width = 800,
         .height = 450,

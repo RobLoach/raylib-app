@@ -38,36 +38,40 @@
 extern "C" {
 #endif
 
-typedef struct App App;
-
 /**
  * Application data that is used to manage the window.
  */
-struct App {
+typedef struct App {
     /**
      * The initiatialization callback for the application.
      *
      * InitWindow() will be called prior to init() being called.
      *
-     * @param app The App information for the currently running application.
+     * @param userData If the application uses custom data, initialize the memory here.
+     * @param argc The number of arguments passed through the command line.
+     * @param argv A string array of command line arguments.
+     *
+     * @return True if initialization was successful.
      */
-    void (*init)(App* app);
+    bool (*init)(void** userData, int argc, char** argv);
 
     /**
      * The update callback to update and draw the application.
      *
-     * @param app The App information for the currently running application.
+     * @param userData The App information for the currently running application.
+     *
+     * @return True if the application is to continue running, false otherwise.
      */
-    void (*update)(App* app);
+    bool (*update)(void* userData);
 
     /**
      * The close callback used to deinitialize all application data.
      *
      * CloseWindow() is called after the callback is run.
      *
-     * @param app The App information for the currently running application.
+     * @param userData The App information for the currently running application.
      */
-    void (*close)(App* app);
+    void (*close)(void* userData);
 
     /**
      * The desired width of the application window.
@@ -100,20 +104,6 @@ struct App {
     int fps;
 
     /**
-     * When set to TRUE, will stop running the update() callback and close the application.
-     *
-     * @see CloseApp()
-     */
-    bool shouldClose;
-
-    /**
-     * The exit status to return after the application has been run.
-     *
-     * Set this to 1 if you'd like to report an error when exiting.
-     */
-    int exitStatus;
-
-    /**
      * Custom user data that is passed through the application callbacks.
      *
      * This is helpful if you have context that needs to be passed through all the callbacks.
@@ -121,14 +111,7 @@ struct App {
      * @example test/raylib-app-test.c
      */
     void* userData;
-};
-
-/**
- * Tells the application that it should close.
- *
- * @param app The application that should be closed.
- */
-void CloseApp(App* app);
+} App;
 
 #if defined(__cplusplus)
 }
@@ -167,23 +150,12 @@ extern "C" {
  * The main entry point defining the application behavior.
  *
  * @see App
- * @param argc The length of the argument vector.
- * @param argv The array of arguments.
  * @example examples/core_basic_window.c
  *
  * @return The App description for your Application.
  */
-extern App Main(int argc, char* argv[]);
+extern App Main();
 #endif
-
-/**
- * Informs the application that it should close.
- *
- * @param app The application that should close.
- */
-void CloseApp(App* app) {
-    app->shouldClose = true;
-}
 
 #if defined(PLATFORM_WEB)
 /**
@@ -195,15 +167,11 @@ void RaylibAppWebUpdate(void* app) {
         return;
     }
 
-    if (application->shouldClose) {
-        // Tell emscripten that it should stop doing the main loop.
-        emscripten_cancel_main_loop();
-        return;
-    }
-
     // Call the update function.
     if (application->update != NULL) {
-        application->update(application);
+        if (!application->update(application->userData)) {
+            emscripten_cancel_main_loop();
+        }
     }
 }
 #endif
@@ -214,12 +182,7 @@ void RaylibAppWebUpdate(void* app) {
  */
 int main(int argc, char* argv[]) {
     // Get the user-defined App from their Main() function.
-    App app = Main(argc, argv);
-
-    // Allow exiting early if desired.
-    if (app.shouldClose) {
-        return app.exitStatus;
-    }
+    App app = Main();
 
     // Config Flags
     if (app.configFlags != 0) {
@@ -228,6 +191,11 @@ int main(int argc, char* argv[]) {
 
     // Initialize
     InitWindow(app.width, app.height, app.title);
+
+    // Error checking
+    if (!IsWindowReady()) {
+        return 1;
+    }
 
     // Handle the FPS
     if (app.fps > 0) {
@@ -239,7 +207,10 @@ int main(int argc, char* argv[]) {
 
     // Call the init callback.
     if (app.init != NULL) {
-        app.init(&app);
+        if (!app.init(&app.userData, argc, argv)) {
+            CloseWindow();
+            return 1;
+        }
     }
 
     // Start the update loop
@@ -248,20 +219,22 @@ int main(int argc, char* argv[]) {
         emscripten_set_main_loop_arg(RaylibAppWebUpdate, &app, app.fps, 1);
 #else
         // Stop running if the Window or App have been told to close.
-        while (!WindowShouldClose() && !app.shouldClose) {
-            app.update(&app);
+        while (!WindowShouldClose()) {
+            if (!app.update(app.userData)) {
+                break;
+            }
         }
 #endif
     }
 
     // Close the App and Window
     if (app.close != NULL) {
-        app.close(&app);
+        app.close(app.userData);
     }
 
     CloseWindow();
 
-    return app.exitStatus;
+    return 0;
 }
 #endif // RAYLIB_APP_NO_ENTRY
 

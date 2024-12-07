@@ -4,7 +4,7 @@ Application wrapper for [raylib](https://raylib.com).
 
 ## Why
 
-Building raylib for both the desktop and web need some subtle differences with checks against `PLATFORM`. *raylib-app* aims to clean up those differences, and make the code easier to read for a unified application entry. This pattern is inspired by [sokol_app](https://github.com/floooh/sokol#sokol_apph).
+Building raylib for both the desktop and web need some subtle differences with checks against `PLATFORM`. *raylib-app* aims to clean up those differences, and make the code easier to read for a unified application entry. This pattern is inspired by [sokol_app](https://github.com/floooh/sokol#sokol_apph) and [SDL3's Main Functions](https://wiki.libsdl.org/SDL3/README/main-functions).
 
 ## Usage
 
@@ -14,11 +14,12 @@ Building raylib for both the desktop and web need some subtle differences with c
 #define RAYLIB_APP_IMPLEMENTATION
 #include "raylib-app.h"
 
-void Init(App* app) {
+bool Init(void** userData, int argc, char** argv) {
     // InitWindow() is automatically called prior to this function.
+    return true;
 }
 
-void UpdateDrawFrame(App* app) {
+bool UpdateDrawFrame(void* userData) {
     BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -26,9 +27,12 @@ void UpdateDrawFrame(App* app) {
         DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
 
     EndDrawing();
+
+    // Return false to exit the application.
+    return true;
 }
 
-void Close(App* app) {
+void Close(void* userData) {
     // CloseWindow() is automatically called after this function completes.
 }
 
