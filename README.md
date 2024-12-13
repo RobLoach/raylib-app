@@ -63,20 +63,9 @@ App Main(int argc, char* argv[]) {
         .update = UpdateDrawFrame,             // The update callback that is called when the application should render
         .close = Close,                        // The close callback which is called when the application is closed
         .fps = 60,                             // The target frames-per-second
-        .configFlags = FLAG_WINDOW_RESIZABLE,  // The flags that are passed to SetConfigFlags()
-        .shouldClose = false,                  // Indicate whether or not the application should be closed
-        .exitStatus = 0,                       // When the application closes, this is the exit status that is returned
-        .userData = NULL                       // Custom user data that is passed through all the callbacks
+        .configFlags = FLAG_WINDOW_RESIZABLE   // The flags that are passed to SetConfigFlags()
     };
 }
-```
-
-### Functions
-
-Through the update callback, you can call the following function to let the application know that it should stop calling the update callback.
-
-``` c
-void CloseApp(App* app);    // Tells the application that it should close.
 ```
 
 ## Development
