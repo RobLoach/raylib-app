@@ -1,11 +1,11 @@
 /**********************************************************************************************
 *
-*   raylib-app v0.0.3 - Application wrapper for raylib.
+*   raylib-app v1.1.0 - Application wrapper for raylib.
 *
 *       https://github.com/RobLoach/raylib-app
 *
 *   DEPENDENCIES:
-*       - raylib 5.x https://www.raylib.com
+*       - raylib 5.5+ https://www.raylib.com
 *
 *   LICENSE: zlib/libpng
 *
@@ -33,10 +33,6 @@
 
 #ifndef RAYLIB_APP_H_
 #define RAYLIB_APP_H_
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 /**
  * Application data that is used to manage the window.
@@ -113,10 +109,6 @@ typedef struct App {
     void* userData;
 } App;
 
-#if defined(__cplusplus)
-}
-#endif
-
 #endif  // RAYLIB_APP_H_
 
 #ifdef RAYLIB_APP_IMPLEMENTATION
@@ -141,10 +133,6 @@ typedef struct App {
 #include <stddef.h>
 #endif
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
 #if !defined(RAYLIB_APP_NO_ENTRY)
 /**
  * The main entry point defining the application behavior.
@@ -155,6 +143,10 @@ extern "C" {
  * @return The App description for your Application.
  */
 extern App Main();
+#endif
+
+#if defined(__cplusplus)
+extern "C" {
 #endif
 
 #if defined(PLATFORM_WEB)

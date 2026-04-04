@@ -6,6 +6,9 @@ target_link_libraries(raylib-app-test PUBLIC
     raylib-app
 )
 
+set_property(TARGET raylib-app-test PROPERTY C_STANDARD 90)
+set_property(TARGET raylib-app-test PROPERTY C_STANDARD_REQUIRED ON)
+
 # Set up the test
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 add_test(NAME raylib-app-test COMMAND raylib-app-test)
