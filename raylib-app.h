@@ -1,18 +1,18 @@
 /**********************************************************************************************
 *
-*   raylib-app v1.1.0 - Application wrapper for raylib.
+*   raylib-app v2.0.0 - Application wrapper for raylib.
 *
 *       https://github.com/RobLoach/raylib-app
 *
 *   DEPENDENCIES:
-*       - raylib 5.5+ https://www.raylib.com
+*       - raylib 6.0+ https://www.raylib.com
 *
 *   LICENSE: zlib/libpng
 *
 *   raylib-app is licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software:
 *
-*   Copyright (c) 2022 Rob Loach (@RobLoach)
+*   Copyright (c) 2026 Rob Loach (@RobLoach)
 *
 *   This software is provided "as-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.

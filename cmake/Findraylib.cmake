@@ -1,6 +1,5 @@
 # RAYLIB_VERSION
 if (NOT RAYLIB_VERSION)
-    #set(RAYLIB_VERSION 5.5)
     set(RAYLIB_VERSION 6.0)
 endif()
 
@@ -8,8 +7,7 @@ include(FetchContent)
 FetchContent_Declare(
     raylib
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    #URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
-    URL https://github.com/raysan5/raylib/archive/refs/heads/master.zip
+    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
 )
 FetchContent_GetProperties(raylib)
 
