@@ -40,7 +40,7 @@ void Close(void* userData) {
     //--------------------------------------------------------------------------------------
 }
 
-App Main(int argc, char* argv[]) {
+App Main() {
     return (App) {
         .width = 800,
         .height = 450,

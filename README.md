@@ -19,30 +19,29 @@ bool Init(void** userData, int argc, char** argv) {
     return true;
 }
 
-bool UpdateDrawFrame(void* userData) {
-    BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
-
-    EndDrawing();
-
+bool Update(void* userData) {
     // Return false to exit the application.
-    return true;
+    return !IsKeyDown(KEY_Q);
+}
+
+void Draw(void* userData) {
+    // BeginDrawing() and EndDrawing() are called automatically by raylib-app.
+    ClearBackground(RAYWHITE);
+    DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
 }
 
 void Close(void* userData) {
     // CloseWindow() is automatically called after this function completes.
 }
 
-App Main(int argc, char* argv[]) {
+App Main() {
     return (App) {
         .width = 800,
         .height = 450,
         .title = "raylib-app [core] example - basic window",
         .init = Init,
-        .update = UpdateDrawFrame,
+        .update = Update,
+        .draw = Draw,
         .close = Close,
         .fps = 60,
     };
@@ -51,22 +50,34 @@ App Main(int argc, char* argv[]) {
 
 ## API
 
-Rather than having your own `int main()`, you will define your own `App Main(int argc char* argv[])` function.
+Rather than having your own `int main()`, you will define your own `App Main()` function.
 
 ``` c
-App Main(int argc, char* argv[]) {
+App Main() {
     return (App) {
         .width = 800,                          // The width of the window
         .height = 450,                         // The height of the window
         .title = "raylib-app",                 // The window title
-        .init = Init,                          // The init callback that is called when the application initializes
-        .update = UpdateDrawFrame,             // The update callback that is called when the application should render
-        .close = Close,                        // The close callback which is called when the application is closed
+        .init = Init,                          // Called once after InitWindow(); receives argc/argv
+        .update = Update,                      // Called each frame; return false to exit
+        .draw = Draw,                          // Called each frame; BeginDrawing/EndDrawing are automatic
+        .close = Close,                        // Called before CloseWindow()
         .fps = 60,                             // The target frames-per-second
         .configFlags = FLAG_WINDOW_RESIZABLE   // The flags that are passed to SetConfigFlags()
     };
 }
 ```
+
+### Callbacks
+
+| Callback | Signature | Description |
+|----------|-----------|-------------|
+| `init`   | `bool (*init)(void** userData, int argc, char** argv)` | Called once after `InitWindow()`. Return `false` to abort. |
+| `update` | `bool (*update)(void* userData)` | Called each frame for logic. Return `false` to exit. |
+| `draw`   | `void (*draw)(void* userData)` | Called each frame for rendering. `BeginDrawing()`/`EndDrawing()` are called automatically. |
+| `close`  | `void (*close)(void* userData)` | Called before `CloseWindow()` for cleanup. |
+
+All callbacks are optional. `update` and `draw` can be used independently or together.
 
 ## Development
 
