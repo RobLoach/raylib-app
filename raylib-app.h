@@ -142,7 +142,7 @@ typedef struct App {
  *
  * @return The App description for your Application.
  */
-extern App Main();
+extern App Main(int argc, char* argv[]);
 #endif
 
 #if defined(__cplusplus)
@@ -174,7 +174,7 @@ void RaylibAppWebUpdate(void* app) {
  */
 int main(int argc, char* argv[]) {
     // Get the user-defined App from their Main() function.
-    App app = Main();
+    App app = Main(argc, argv);
 
     // Config Flags
     if (app.configFlags != 0) {
