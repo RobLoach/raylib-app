@@ -52,13 +52,22 @@ typedef struct App {
     bool (*init)(void** userData, int argc, char** argv);
 
     /**
-     * The update callback to update and draw the application.
+     * The update callback for per-frame logic.
      *
      * @param userData The App information for the currently running application.
      *
      * @return True if the application is to continue running, false otherwise.
      */
     bool (*update)(void* userData);
+
+    /**
+     * The draw callback for rendering. Called each frame after update().
+     *
+     * BeginDrawing() and EndDrawing() are called by the wrapper around draw().
+     *
+     * @param userData The App information for the currently running application.
+     */
+    void (*draw)(void* userData);
 
     /**
      * The close callback used to deinitialize all application data.
@@ -165,6 +174,13 @@ void RaylibAppWebUpdate(void* app) {
             emscripten_cancel_main_loop();
         }
     }
+
+    // Call the draw function.
+    if (application->draw != NULL) {
+        BeginDrawing();
+        application->draw(application->userData);
+        EndDrawing();
+    }
 }
 #endif
 
@@ -206,14 +222,21 @@ int main(int argc, char* argv[]) {
     }
 
     // Start the update loop
-    if (app.update != NULL) {
+    if (app.update != NULL || app.draw != NULL) {
 #if defined(PLATFORM_WEB)
         emscripten_set_main_loop_arg(RaylibAppWebUpdate, &app, app.fps, 1);
 #else
         // Stop running if the Window or App have been told to close.
         while (!WindowShouldClose()) {
-            if (!app.update(app.userData)) {
-                break;
+            if (app.update != NULL) {
+                if (!app.update(app.userData)) {
+                    break;
+                }
+            }
+            if (app.draw != NULL) {
+                BeginDrawing();
+                app.draw(app.userData);
+                EndDrawing();
             }
         }
 #endif
