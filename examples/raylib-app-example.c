@@ -12,7 +12,7 @@ bool Init(void** userData, int argc, char** argv) {
     return true;
 }
 
-bool UpdateDrawFrame(void* userData) {
+bool Update(void* userData) {
     // Update
     //----------------------------------------------------------------------------------
     if (IsKeyDown(KEY_Q)) {
@@ -20,19 +20,17 @@ bool UpdateDrawFrame(void* userData) {
     }
     //----------------------------------------------------------------------------------
 
+    return true;
+}
+
+void Draw(void* userData) {
     // Draw
     //----------------------------------------------------------------------------------
-    BeginDrawing();
+    // BeginDrawing() and EndDrawing() are called automatically by raylib-app.
+    ClearBackground(RAYWHITE);
 
-        ClearBackground(RAYWHITE);
-
-        DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
-
-    EndDrawing();
+    DrawText("Congrats! You created your first raylib-app!", 180, 200, 20, LIGHTGRAY);
     //----------------------------------------------------------------------------------
-
-    // Return false to end the update loop.
-    return true;
 }
 
 void Close(void* userData) {
@@ -48,7 +46,8 @@ App Main() {
         .height = 450,
         .title = "raylib-app [core] example - basic window",
         .init = Init,
-        .update = UpdateDrawFrame,
+        .update = Update,
+        .draw = Draw,
         .close = Close,
         .fps = 60,
     };
