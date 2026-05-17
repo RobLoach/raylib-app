@@ -226,6 +226,9 @@ int main(int argc, char* argv[]) {
     // Call the init callback.
     if (app.init != NULL) {
         if (!app.init(&app.userData, argc, argv)) {
+            if (app.close != NULL) {
+                app.close(app.userData);
+            }
             CloseWindow();
             return 1;
         }
