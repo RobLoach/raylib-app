@@ -6,34 +6,29 @@
 
 typedef struct AppData {
     int frameCount;
+    int drawCount;
     bool initCalled;
     bool updateCalled;
     bool closeCalled;
 } AppData;
 
 bool Init(void** userData, int argc, char** argv) {
-    // Initialization
-    //--------------------------------------------------------------------------------------
+    AppData* appData;
     (void)argc;
     (void)argv;
 
-    // Create the user data.
-    AppData* appData = MemAlloc(sizeof(AppData));
+    appData = MemAlloc(sizeof(AppData));
     if (appData == NULL) {
         return false;
     }
 
     *userData = (void*)appData;
-
     appData->initCalled = true;
 
     return true;
-    //--------------------------------------------------------------------------------------
 }
 
-bool UpdateDrawFrame(void* userData) {
-    // Update
-    //----------------------------------------------------------------------------------
+bool Update(void* userData) {
     AppData* appData = (AppData*)userData;
 
     if (appData == NULL) {
@@ -41,20 +36,7 @@ bool UpdateDrawFrame(void* userData) {
     }
 
     appData->updateCalled = true;
-    //----------------------------------------------------------------------------------
 
-    // Draw
-    //----------------------------------------------------------------------------------
-    BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        DrawText("raylib-app-test", 180, 200, 20, LIGHTGRAY);
-
-    EndDrawing();
-    //----------------------------------------------------------------------------------
-
-    // Close after 10 frames
     if (++appData->frameCount >= 10) {
         return false;
     }
@@ -62,21 +44,28 @@ bool UpdateDrawFrame(void* userData) {
     return true;
 }
 
+void Draw(void* userData) {
+    AppData* appData = (AppData*)userData;
+    if (appData == NULL) {
+        return;
+    }
+
+    ClearBackground(RAYWHITE);
+    DrawText("raylib-app-test", 180, 200, 20, LIGHTGRAY);
+    appData->drawCount++;
+}
+
 void Close(void* userData) {
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
     AppData* appData = (AppData*)userData;
     appData->closeCalled = true;
 
-    // Run the asserts, assuming all callbacks were executed.
     Assert(appData->initCalled);
     Assert(appData->updateCalled);
     Assert(appData->closeCalled);
     AssertEqual(appData->frameCount, 10, "Expected frame counter is not 10, it is %i", appData->frameCount);
+    AssertEqual(appData->drawCount, appData->frameCount, "Expected draw count %i, got %i", appData->frameCount, appData->drawCount);
 
-    // Clean up the application data.
     MemFree(appData);
-    //--------------------------------------------------------------------------------------
 }
 
 App Main(void) {
@@ -85,9 +74,10 @@ App Main(void) {
         .width = 640,
         .height = 480,
         .title = "raylib-app-test",
-        .init = Init,
-        .update = UpdateDrawFrame,
-        .close = Close,
         .fps = 60,
+        .init = Init,
+        .update = Update,
+        .draw = Draw,
+        .close = Close,
     };
 }
