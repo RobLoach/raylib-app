@@ -34,6 +34,11 @@
 #ifndef RAYLIB_APP_H_
 #define RAYLIB_APP_H_
 
+#define RAYLIB_APP_VERSION_MAJOR 2
+#define RAYLIB_APP_VERSION_MINOR 0
+#define RAYLIB_APP_VERSION_PATCH 0
+#define RAYLIB_APP_VERSION "2.0.0"
+
 /**
  * Application data that is used to manage the window.
  */
