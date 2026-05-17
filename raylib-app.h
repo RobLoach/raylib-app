@@ -151,7 +151,7 @@ typedef struct App {
  *
  * @return The App description for your Application.
  */
-extern App Main();
+extern App Main(void);
 #endif
 
 #if defined(__cplusplus)
