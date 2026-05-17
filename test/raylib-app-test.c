@@ -68,7 +68,8 @@ void Close(void* userData) {
     MemFree(appData);
 }
 
-App Main() {
+App Main(void) {
+    // Create the application data.
     return (App) {
         .width = 640,
         .height = 480,

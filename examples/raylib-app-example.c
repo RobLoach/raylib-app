@@ -40,7 +40,7 @@ void Close(void* userData) {
     //--------------------------------------------------------------------------------------
 }
 
-App Main() {
+App Main(void) {
     return (App) {
         .width = 800,
         .height = 450,

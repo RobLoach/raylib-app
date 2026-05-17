@@ -34,6 +34,11 @@
 #ifndef RAYLIB_APP_H_
 #define RAYLIB_APP_H_
 
+#define RAYLIB_APP_VERSION_MAJOR 2
+#define RAYLIB_APP_VERSION_MINOR 0
+#define RAYLIB_APP_VERSION_PATCH 0
+#define RAYLIB_APP_VERSION "2.0.0"
+
 /**
  * Application data that is used to manage the window.
  */
@@ -151,7 +156,7 @@ typedef struct App {
  *
  * @return The App description for your Application.
  */
-extern App Main();
+extern App Main(void);
 #endif
 
 #if defined(__cplusplus)
@@ -171,7 +176,12 @@ void RaylibAppWebUpdate(void* app) {
     // Call the update function.
     if (application->update != NULL) {
         if (!application->update(application->userData)) {
+            if (application->close != NULL) {
+                application->close(application->userData);
+            }
+            CloseWindow();
             emscripten_cancel_main_loop();
+            return;
         }
     }
 
@@ -216,6 +226,9 @@ int main(int argc, char* argv[]) {
     // Call the init callback.
     if (app.init != NULL) {
         if (!app.init(&app.userData, argc, argv)) {
+            if (app.close != NULL) {
+                app.close(app.userData);
+            }
             CloseWindow();
             return 1;
         }
