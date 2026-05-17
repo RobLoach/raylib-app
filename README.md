@@ -34,7 +34,7 @@ void Close(void* userData) {
     // CloseWindow() is automatically called after this function completes.
 }
 
-App Main() {
+App Main(void) {
     return (App) {
         .width = 800,
         .height = 450,
@@ -50,10 +50,10 @@ App Main() {
 
 ## API
 
-Rather than having your own `int main()`, you will define your own `App Main()` function.
+Rather than having your own `int main()`, you will define your own `App Main(void)` function.
 
 ``` c
-App Main() {
+App Main(void) {
     return (App) {
         .width = 800,                          // The width of the window
         .height = 450,                         // The height of the window

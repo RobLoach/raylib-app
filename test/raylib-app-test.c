@@ -79,7 +79,7 @@ void Close(void* userData) {
     //--------------------------------------------------------------------------------------
 }
 
-App Main() {
+App Main(void) {
     // Create the application data.
     return (App) {
         .width = 640,
