@@ -173,6 +173,15 @@ void RaylibAppWebUpdate(void* app) {
         return;
     }
 
+    if (WindowShouldClose()) {
+        if (application->close != NULL) {
+            application->close(application->userData);
+        }
+        CloseWindow();
+        emscripten_cancel_main_loop();
+        return;
+    }
+
     // Call the update function.
     if (application->update != NULL) {
         if (!application->update(application->userData)) {
