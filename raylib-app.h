@@ -152,7 +152,7 @@ typedef struct App {
  * The main entry point defining the application behavior.
  *
  * @see App
- * @example examples/core_basic_window.c
+ * @example examples/raylib-app-example.c
  *
  * @return The App description for your Application.
  */
