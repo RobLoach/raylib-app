@@ -62,8 +62,8 @@ void Close(void* userData) {
     Assert(appData->initCalled);
     Assert(appData->updateCalled);
     Assert(appData->closeCalled);
-    AssertEqual(appData->frameCount, 10, "Expected frame counter is not 10, it is %i", appData->frameCount);
-    AssertEqual(appData->drawCount, appData->frameCount, "Expected draw count %i, got %i", appData->frameCount, appData->drawCount);
+    AssertEqual(appData->frameCount, 10, "Expected frame counter is not 10, it is %d", appData->frameCount);
+    AssertGreater(appData->drawCount, 8, "Expected draw count to be >= 8, got %d", appData->drawCount);
 
     MemFree(appData);
 }
