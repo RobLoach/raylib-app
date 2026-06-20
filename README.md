@@ -72,7 +72,7 @@ App Main(void) {
 
 | Callback | Signature | Description |
 |----------|-----------|-------------|
-| `init`   | `bool (*init)(void** userData, int argc, char** argv)` | Called once after `InitWindow()`. Return `false` to abort. |
+| `init`   | `bool (*init)(void** userData, int argc, char** argv)` | Called once after `InitWindow()`. Return `false` to abort; `close()` is *not* called on failure, so clean up any partial allocations yourself. |
 | `update` | `bool (*update)(void* userData)` | Called each frame for logic. Return `false` to exit. |
 | `draw`   | `void (*draw)(void* userData)` | Called each frame for rendering. `BeginDrawing()`/`EndDrawing()` are called automatically. |
 | `close`  | `void (*close)(void* userData)` | Called before `CloseWindow()` for cleanup. |
@@ -80,6 +80,8 @@ App Main(void) {
 All callbacks are optional. `update` and `draw` can be used independently or together.
 
 ## Development
+
+*raylib-app* targets C99 (or newer), and requires raylib 6.0+.
 
 There are a few ways to build raylib-app.
 
@@ -98,6 +100,24 @@ cd build
 emcmake cmake .. -DPLATFORM=Web -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS="-s USE_GLFW=3"
 emmake make
 ```
+
+#### Web Performance
+
+On the web, *raylib-app* honors the requested `.fps`: a positive value is throttled cooperatively by emscripten via `setTimeout`, and `0` falls back to `requestAnimationFrame` (the display refresh rate). It skips `SetTargetFPS()` on the web so it won't block the browser's main thread with a busy/sleep wait.
+
+Because `.fps = 0` runs at the display refresh rate (which exceeds 60 Hz on high-refresh monitors), drive any motion with `GetFrameTime()` rather than assuming a fixed timestep, so the app behaves consistently across frame rates.
+
+For the rest, performance on the web is mostly determined by your build flags:
+
+- Build with `-DCMAKE_BUILD_TYPE=Release`. Emscripten defaults to `-O0`, so
+  this (with `-O3`) is the single biggest runtime-performance win. Use `-Os` or `-Oz` instead if download size matters more than speed
+- `-flto`: link-time optimization, pairs well with `-O3`
+- `--closure=1`: minifies the generated JS glue for faster startup
+- `-sENVIRONMENT=web`: drops the Node/worker glue a browser build never uses
+- `-sFILESYSTEM=0`: removes the filesystem runtime if the app does no file I/O
+- `-sMALLOC=emmalloc`: a smaller, faster allocator for simple apps
+
+See [examples/CMakeLists.txt](examples/CMakeLists.txt) for these applied to the example's web build.
 
 ## License
 
