@@ -52,6 +52,9 @@ typedef struct App {
      * @param argc The number of arguments passed through the command line.
      * @param argv A string array of command line arguments.
      *
+     * If init() returns false, close() is NOT called, so init() must clean up
+     * any partial allocations it made before returning false.
+     *
      * @return True if initialization was successful.
      */
     bool (*init)(void** userData, int argc, char** argv);
@@ -229,19 +232,24 @@ int RaylibAppRun(App* app, int argc, char* argv[]) {
     }
 
     // Handle the FPS
+    if (app->fps < 0) {
+        app->fps = 0;
+    }
+#if !defined(PLATFORM_WEB)
+    // On web the loop is driven by requestAnimationFrame (see below), so
+    // SetTargetFPS() is skipped: it would make raylib's EndDrawing() block the
+    // browser's main thread with WaitTime()/nanosleep() every frame.
     if (app->fps > 0) {
         SetTargetFPS(app->fps);
     }
-    else {
-        app->fps = 0;
-    }
+#endif
 
     // Call the init callback.
     if (app->init != NULL) {
         if (!app->init(&app->userData, argc, argv)) {
-            if (app->close != NULL) {
-                app->close(app->userData);
-            }
+            // close() is not called here: init() failed, so there is nothing
+            // fully initialized to tear down. init() is responsible for
+            // cleaning up any of its own partial allocations on failure.
             CloseWindow();
             return 1;
         }
@@ -250,6 +258,9 @@ int RaylibAppRun(App* app, int argc, char* argv[]) {
     // Start the update loop
     if (app->update != NULL || app->draw != NULL) {
 #if defined(PLATFORM_WEB)
+        // fps > 0: emscripten throttles cooperatively via setTimeout, honoring
+        // the requested target without blocking the browser's main thread.
+        // fps == 0: emscripten uses requestAnimationFrame (display refresh rate).
         emscripten_set_main_loop_arg(RaylibAppWebUpdate, app, app->fps, 1);
 #else
         while (!WindowShouldClose()) {
