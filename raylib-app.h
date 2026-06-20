@@ -166,19 +166,14 @@ extern "C" {
 #if defined(PLATFORM_WEB)
 /**
  * The update callback for web.
+ *
+ * WindowShouldClose() is not called here because it is always false on web,
+ * and raylib's web backend implements it with emscripten_sleep() which
+ * requires ASYNCIFY (breaks JS->wasm callbacks).
  */
 void RaylibAppWebUpdate(void* app) {
     App* application = (App*)app;
     if (application == NULL) {
-        return;
-    }
-
-    if (WindowShouldClose()) {
-        if (application->close != NULL) {
-            application->close(application->userData);
-        }
-        CloseWindow();
-        emscripten_cancel_main_loop();
         return;
     }
 
@@ -203,21 +198,30 @@ void RaylibAppWebUpdate(void* app) {
 }
 #endif
 
-#if !defined(RAYLIB_APP_NO_ENTRY)
 /**
- * The main entry point for raylib-app.
+ * Run the application lifecycle: init window, call callbacks, run the loop.
+ *
+ * This is available regardless of RAYLIB_APP_NO_ENTRY, so users who provide
+ * their own main() can still use raylib-app's lifecycle management.
+ *
+ * @param app The application description.
+ * @param argc The number of command line arguments.
+ * @param argv The command line arguments.
+ *
+ * @return 0 on success, 1 on failure.
  */
-int main(int argc, char* argv[]) {
-    // Get the user-defined App from their Main() function.
-    App app = Main();
+int RaylibAppRun(App* app, int argc, char* argv[]) {
+    if (app == NULL) {
+        return 1;
+    }
 
     // Config Flags
-    if (app.configFlags != 0) {
-        SetConfigFlags(app.configFlags);
+    if (app->configFlags != 0) {
+        SetConfigFlags(app->configFlags);
     }
 
     // Initialize
-    InitWindow(app.width, app.height, app.title);
+    InitWindow(app->width, app->height, app->title);
 
     // Error checking
     if (!IsWindowReady()) {
@@ -225,18 +229,18 @@ int main(int argc, char* argv[]) {
     }
 
     // Handle the FPS
-    if (app.fps > 0) {
-        SetTargetFPS(app.fps);
+    if (app->fps > 0) {
+        SetTargetFPS(app->fps);
     }
     else {
-        app.fps = 0;
+        app->fps = 0;
     }
 
     // Call the init callback.
-    if (app.init != NULL) {
-        if (!app.init(&app.userData, argc, argv)) {
-            if (app.close != NULL) {
-                app.close(app.userData);
+    if (app->init != NULL) {
+        if (!app->init(&app->userData, argc, argv)) {
+            if (app->close != NULL) {
+                app->close(app->userData);
             }
             CloseWindow();
             return 1;
@@ -244,20 +248,19 @@ int main(int argc, char* argv[]) {
     }
 
     // Start the update loop
-    if (app.update != NULL || app.draw != NULL) {
+    if (app->update != NULL || app->draw != NULL) {
 #if defined(PLATFORM_WEB)
-        emscripten_set_main_loop_arg(RaylibAppWebUpdate, &app, app.fps, 1);
+        emscripten_set_main_loop_arg(RaylibAppWebUpdate, app, app->fps, 1);
 #else
-        // Stop running if the Window or App have been told to close.
         while (!WindowShouldClose()) {
-            if (app.update != NULL) {
-                if (!app.update(app.userData)) {
+            if (app->update != NULL) {
+                if (!app->update(app->userData)) {
                     break;
                 }
             }
-            if (app.draw != NULL) {
+            if (app->draw != NULL) {
                 BeginDrawing();
-                app.draw(app.userData);
+                app->draw(app->userData);
                 EndDrawing();
             }
         }
@@ -265,13 +268,22 @@ int main(int argc, char* argv[]) {
     }
 
     // Close the App and Window
-    if (app.close != NULL) {
-        app.close(app.userData);
+    if (app->close != NULL) {
+        app->close(app->userData);
     }
 
     CloseWindow();
 
     return 0;
+}
+
+#if !defined(RAYLIB_APP_NO_ENTRY)
+/**
+ * The main entry point for raylib-app.
+ */
+int main(int argc, char* argv[]) {
+    App app = Main();
+    return RaylibAppRun(&app, argc, argv);
 }
 #endif // RAYLIB_APP_NO_ENTRY
 
