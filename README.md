@@ -99,6 +99,18 @@ emcmake cmake .. -DPLATFORM=Web -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FL
 emmake make
 ```
 
+#### Web Performance
+
+Performance can be improved on the web by flipping some of the configuration...
+
+- Build with `-DCMAKE_BUILD_TYPE=Release`. Emscripten defaults to `-O0`, so
+  this (with `-O3`) is the single biggest runtime-performance win. Use `-Os` or `-Oz` instead if download size matters more than speed
+- `-flto`: link-time optimization, pairs well with `-O3`
+- `--closure=1`: minifies the generated JS glue for faster startup
+- `-sENVIRONMENT=web`: drops the Node/worker glue a browser build never uses
+- `-sFILESYSTEM=0`: removes the filesystem runtime if the app does no file I/O
+- `-sMALLOC=emmalloc`: a smaller, faster allocator for simple apps
+
 ## License
 
 *raylib-app* is licensed under an unmodified zlib/libpng license, which is an OSI-certified, BSD-like license that allows static linking with closed source software. Check [LICENSE](LICENSE) for further details.

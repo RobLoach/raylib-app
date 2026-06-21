@@ -235,9 +235,9 @@ int main(int argc, char* argv[]) {
     // Call the init callback.
     if (app.init != NULL) {
         if (!app.init(&app.userData, argc, argv)) {
-            if (app.close != NULL) {
-                app.close(app.userData);
-            }
+            // close() is not called here: init() failed, so there is nothing
+            // fully initialized to tear down. init() is responsible for
+            // cleaning up any of its own partial allocations on failure.
             CloseWindow();
             return 1;
         }
